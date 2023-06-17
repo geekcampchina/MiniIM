@@ -27,7 +27,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
 
 
 def main():
-    parser = argparse.ArgumentParser(prog='mini_im',
+    parser = argparse.ArgumentParser(prog='mini_im_server',
                                      description='迷你IM服务端',
                                      usage='%(prog)s -H|-P|-l|-v')
 
