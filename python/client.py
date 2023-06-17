@@ -2,10 +2,12 @@ import signal
 import socket
 import sys
 
+from common import hlog
+
 
 # noinspection PyUnusedLocal
 def sigint_handler(sig, frame):
-    print('\n\n收到 Ctrl+C 信号，退出......')
+    hlog.info('\n\n收到 Ctrl+C 信号，退出......')
     exit(0)
 
 
@@ -22,8 +24,8 @@ def main():
         # Receive data from the server and shut down
         received = str(sock.recv(1024), "utf-8")
 
-    print("Sent:     {}".format(data))
-    print("Received: {}".format(received))
+    hlog.info("Sent:     {}".format(data))
+    hlog.info("Received: {}".format(received))
 
 
 if __name__ == "__main__":
