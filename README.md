@@ -1,6 +1,6 @@
-# Mini IM Protocol
+# Mini IM
 
-迷你聊天应用协议
+迷你聊天应用，基于多语言实现，用于新人认识软件系统和TCP/IP协议
 
 ## Python版
 
@@ -64,4 +64,4 @@
 
 ## Rust版
 
-## Cpp版
+## C版
