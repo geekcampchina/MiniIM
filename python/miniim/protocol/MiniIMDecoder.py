@@ -1,6 +1,6 @@
-from common import hlog
-from miniim.MiniIMFrame import MiniIMFrame
-from util import to_int, to_hex
+from miniim.protocol import MiniIMFrame, MiniIMField
+from miniim.protocol import MiniIMFieldsHandler
+from util import to_int
 
 
 class MiniIMDecoder:
@@ -40,34 +40,11 @@ class MiniIMDecoder:
     def decode_payload_len(self) -> int:
         return to_int(self.slice_payload_len())
 
-    def decode_fields(self, payload: bytes, result: dict, index: int):
-        """
-        step1->[00 03 4C 79 75] 01 04 61 62 63 64
-        step2->00 03 4C 79 75 [01 04 61 62 63 64]
-        """
+    def decode_payload(self) -> list[MiniIMField]:
+        result = list()
 
-        field_type = payload[index]
-
-        index += 1
-        field_len = payload[index]
-
-        field = payload[index + 1:index + 1 + field_len]
-        field = field.decode('UTF-8')
-
-        hlog.var('field_type', to_hex(field_type))
-        hlog.var('field', field)
-
-        result[field_type] = field
-
-        index = index + field_len + 1
-
-        if index < len(payload):
-            self.decode_fields(payload, result, index)
-
-    def decode_payload(self) -> dict:
-        result = dict()
-
-        self.decode_fields(self.slice_payload(), result, 0)
+        field_handler = MiniIMFieldsHandler()
+        field_handler.run(self.slice_payload(), result)
 
         return result
 

@@ -1,18 +1,23 @@
 import unittest
 
-from miniim import MiniIMDecoder
+from miniim.protocol import MiniIMDecoder, MiniIMField
 from common import hlog
 from util import to_hex_string
 
 
-class ProtocolTest(unittest.TestCase):
-    def test_login(self):
+class MiniIMDecoderTest(unittest.TestCase):
+    def test_run(self):
         print('\n')
 
         hex_data = [
             0x01, 0x00, 0x00, 0x0B,
             0x00, 0x03, 0x4C, 0x79, 0x75,
             0x01, 0x04, 0x61, 0x62, 0x63, 0x64
+        ]
+
+        expected_payload = [
+            MiniIMField(ftype=0, flen=3, fvalue=bytes([0x4C, 0x79, 0x75])),
+            MiniIMField(ftype=1, flen=4, fvalue=bytes([0x61, 0x62, 0x63, 0x64])),
         ]
 
         # 01 00 00 0B 00 03 4C 79 75 01 04 61 62 63 64
@@ -22,7 +27,7 @@ class ProtocolTest(unittest.TestCase):
         decoder = MiniIMDecoder(recv_data)
         frame = decoder.run()
 
-        self.assertEqual(frame.payload, {0: 'Lyu', 1: 'abcd'})
+        self.assertEqual(frame.payload, expected_payload)
 
     def test_validate_header(self):
         print('\n')
@@ -67,23 +72,23 @@ class ProtocolTest(unittest.TestCase):
         self.assertEqual(decoder.slice_payload(),
                          bytes([0x00, 0x03, 0x4C, 0x79, 0x75, 0x01, 0x04, 0x61, 0x62, 0x63, 0x64]))
 
-    def test_validate_fields(self):
+    def test_decode_payload(self):
         hex_data = [
             0x01, 0x00, 0x00, 0x0B,
-            0x00, 0x03, 0x4C, 0x79, 0x75, 0x01, 0x04, 0x61, 0x62, 0x63, 0x64
+            0x00, 0x03, 0x4C, 0x79, 0x75, 0x01, 0x04, 0x61, 0x62, 0x63, 0x64,
+        ]
+
+        expected_result = [
+            MiniIMField(ftype=0, flen=3, fvalue=bytes([0x4C, 0x79, 0x75])),
+            MiniIMField(ftype=1, flen=4, fvalue=bytes([0x61, 0x62, 0x63, 0x64])),
         ]
 
         recv_data = bytes(hex_data)
         decoder = MiniIMDecoder(recv_data)
 
-        result = dict()
-        payload = bytes([0x00, 0x03, 0x4C, 0x79, 0x75, 0x01, 0x04, 0x61, 0x62, 0x63, 0x64])
-        decoder.decode_fields(payload, result, 0)
+        result = decoder.decode_payload()
 
-        self.assertEqual(result, {0: 'Lyu', 1: 'abcd'})
-
-    def test_validate_slice_fields(self):
-        pass
+        self.assertEqual(result, expected_result)
 
 
 if __name__ == '__main__':

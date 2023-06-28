@@ -1,5 +1,6 @@
 import json
 
+from miniim.protocol import MiniIMField
 from util import to_hex
 
 
@@ -13,7 +14,7 @@ class MiniIMFrame:
     def __init__(self):
         self.action_type = 0
         self.payload_len = 0
-        self.payload = dict()
+        self.payload: list[MiniIMField] = []
         self.login = Login()
 
     def __str__(self):
