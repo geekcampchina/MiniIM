@@ -19,9 +19,9 @@ class MiniIMFrame:
 
     def __str__(self):
         output_dict = {
-            'action_type': to_hex(self.action_type),
+            'action_type': self.action_type,
             'payload_len': self.payload_len,
-            'login': self.login.__dict__
+            'login': self.login
         }
 
         return json.dumps(output_dict, indent=4, ensure_ascii=False)

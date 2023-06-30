@@ -8,6 +8,10 @@ from common import hlog
 
 __version__ = '0.0.1'
 
+from miniim import LoginMessage
+
+from miniim.protocol import MiniIMDecoder
+
 
 # noinspection PyUnusedLocal
 def sigint_handler(sig, frame):
@@ -16,14 +20,19 @@ def sigint_handler(sig, frame):
 
 
 class MyTCPHandler(socketserver.BaseRequestHandler):
-    data: bytes
-
     def handle(self):
-        self.data = self.request.recv(1024).strip()
+        recv_data = self.request.recv(1024).strip()
         hlog.debug("{} wrote:".format(self.client_address[0]))
-        hlog.trace(self.data)
-        # just send back the same data, but upper-cased
-        self.request.sendall(self.data.upper())
+        hlog.trace(recv_data)
+
+        decoder = MiniIMDecoder(recv_data)
+        frame = decoder.run()
+
+        lm = LoginMessage(user=frame.payload[0].fvalue.decode('UTF-8'),
+                          password=frame.payload[1].fvalue.decode('UTF-8'),
+                          client=frame.payload[2].fvalue.decode('UTF-8'))
+
+        self.request.sendall(bytes(lm.asjson(), encoding='UTF-8'))
 
 
 def main():
