@@ -1,6 +1,7 @@
 import argparse
 import signal
 import socket
+import json
 
 from happy_python.happy_log import HappyLogLevel
 
@@ -8,6 +9,8 @@ from common import hlog
 
 
 __version__ = '0.0.1'
+
+from miniim import LoginMessage
 
 
 # noinspection PyUnusedLocal
@@ -67,12 +70,16 @@ def main():
     hlog.set_level(args.log_level)
 
     host, port = args.host, args.port
-    message = args.message
+    message = json.loads(args.message)
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         sock.connect((host, port))
 
-        sock.sendall(bytes(message + "\n", "utf-8"))
+        lm = LoginMessage(user=message['user'], password=message['password'], client=message['client'])
+        frame = lm.dump_frame()
+        bb = frame.dump()
+
+        sock.sendall(bb)
 
         received = str(sock.recv(1024), "utf-8")
 

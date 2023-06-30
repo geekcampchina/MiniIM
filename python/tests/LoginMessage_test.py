@@ -45,7 +45,6 @@ class LoginMessageTest(unittest.TestCase):
 
         self.assertEqual(len(frame.payload), 3)
 
-        # TODO Frame->LoginMessage
         lm = LoginMessage(user=frame.payload[0].fvalue.decode('UTF-8'),
                           password=frame.payload[1].fvalue.decode('UTF-8'),
                           client=frame.payload[2].fvalue.decode('UTF-8'))
