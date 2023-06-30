@@ -1,5 +1,7 @@
 import unittest
 
+from miniim import LoginMessage
+
 
 class MiniIMEncoderTest(unittest.TestCase):
     pass

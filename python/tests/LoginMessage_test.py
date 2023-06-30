@@ -7,11 +7,31 @@ from util import to_hex_string
 
 
 class LoginMessageTest(unittest.TestCase):
-    def test_something(self):
+    def test_encoder(self):
+        input_data = {
+            'client': 'telnet',
+            'password': 'abcd',
+            'user': 'Lyu'
+        }
+
+        lm = LoginMessage(user=input_data['user'], password=input_data['password'], client=input_data['client'])
+        frame = lm.dump_frame()
+        bb = frame.dump()
+
+        expected_hex_data = [
+            0x01, 0x00, 0x00, 0x13,
+            0x00, 0x03, 0x4C, 0x79, 0x75,
+            0x01, 0x04, 0x61, 0x62, 0x63, 0x64,
+            0x02, 0x06, 0x74, 0x65, 0x6C, 0x6E, 0x65, 0x74,
+        ]
+
+        self.assertEqual(bb, bytes(expected_hex_data))
+
+    def test_decoder(self):
         print('\n')
 
         hex_data = [
-            0x01, 0x00, 0x00, 0x0B,
+            0x01, 0x00, 0x00, 0x13,
             0x00, 0x03, 0x4C, 0x79, 0x75,
             0x01, 0x04, 0x61, 0x62, 0x63, 0x64,
             0x02, 0x06, 0x74, 0x65, 0x6C, 0x6E, 0x65, 0x74,

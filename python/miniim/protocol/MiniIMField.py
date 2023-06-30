@@ -12,3 +12,11 @@ class MiniIMField:
     def asdict(self):
         return asdict(self)
 
+    def dump(self) -> bytearray:
+        bb = bytearray()
+        bb.append(self.ftype)
+        bb.append(self.flen)
+        bb += self.fvalue
+
+        return bb
+
